@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   rpc,
   TransactionBuilder,
@@ -18,8 +18,11 @@ export default function TokenFaucet() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
 
-  const fetchBalance = async () => {
-    if (!isConnected || !address) return;
+  const fetchBalance = useCallback(async () => {
+    if (!isConnected || !address) {
+      setBalance(null);
+      return;
+    }
     try {
       const server = new rpc.Server(import.meta.env.VITE_RPC_URL, { allowHttp: false });
       const account = await server.getAccount(address);
@@ -36,16 +39,22 @@ export default function TokenFaucet() {
       const sim = await server.simulateTransaction(tx);
       if (!rpc.Api.isSimulationError(sim)) {
         const retVal = (sim as rpc.Api.SimulateTransactionSuccessResponse).result?.retval;
-        if (retVal) setBalance(BigInt(scValToNative(retVal) as number));
+        if (retVal) {
+          const raw = scValToNative(retVal);
+          setBalance(typeof raw === "bigint" ? raw : BigInt(raw as number));
+        } else {
+          setBalance(0n);
+        }
       }
     } catch {
-      // ignore
+      setBalance(null);
     }
-  };
+  }, [isConnected, address]);
 
   useEffect(() => {
-    fetchBalance();
-  }, [isConnected, address]);
+    setBalance(null);
+    void fetchBalance();
+  }, [fetchBalance]);
 
   const handleMint = async () => {
     if (!isConnected || !address) return;
