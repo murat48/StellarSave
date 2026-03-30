@@ -27,9 +27,9 @@ StellarSave is a fully on-chain DeFi savings application built on the **Stellar 
 
 | Contract   | Address                 | Network         |
 | ---------- | ----------------------- | --------------- |
-| SAVE Token | `CCMMAIQ7SDJ62L2FOPONMTIWCZMHDFAV7W2AP3THPP4MTUQAH4RB7ZAN` | Stellar Testnet |
-| Savings    | `CDDWOGYZLZXDYIPY5UDQMJ2UQCMHNWFNWDHQWN272MKMG4Y7BJMYTG6L` | Stellar Testnet |
-| Rewards    | `CBQHNYLC2M7GKLZFDKFDWMNBRG675OB3V6BBCCQIB6OHSJACMCH3I4DJ` | Stellar Testnet |
+| SAVE Token | `CDODH5V5GCVH6GRML3DFHACN47TZMTG45LZDI73L3N2HAY5ABG6ESNIC` | Stellar Testnet |
+| Savings    | `CACWUHVHACFIZGILVZAQP6T5YJZCLZUU7S4BHXCTX65K4JE6EWFCB6JT` | Stellar Testnet |
+| Rewards    | `CBOWZ2CGD6PAIDHOY3GLVUYHV4VRGIX5SCDMDNQXQWIUA63FDPSU524N` | Stellar Testnet |
 
 > Run `./scripts/deploy.sh` to deploy and auto-populate `frontend/.env`.
 
@@ -606,9 +606,9 @@ Write a complete README with:
 - Contract addresses table:
   | Contract | Address | Network |
   |----------|---------|---------|
-| SAVE Token  | `CCMMAIQ7SDJ62L2FOPONMTIWCZMHDFAV7W2AP3THPP4MTUQAH4RB7ZAN` | Stellar Testnet |
-| Savings     | `CDTWBL56NWSAFJOT4YVSI2LUDL2GDPD5DWTIOLMUYYEKCNHLVCGZVHUZ` | Stellar Testnet |
-| Rewards     | `CB7AGMQAXY2VZS3XICNUYNJNNXNKFNG2662J4U45D5KC6KWNAK456LVL` | Stellar Testnet |
+| SAVE Token  | `CDODH5V5GCVH6GRML3DFHACN47TZMTG45LZDI73L3N2HAY5ABG6ESNIC` | Stellar Testnet |
+| Savings     | `CACWUHVHACFIZGILVZAQP6T5YJZCLZUU7S4BHXCTX65K4JE6EWFCB6JT` | Stellar Testnet |
+| Rewards     | `CBOWZ2CGD6PAIDHOY3GLVUYHV4VRGIX5SCDMDNQXQWIUA63FDPSU524N` | Stellar Testnet |
 - Setup instructions (local dev)
 - How inter-contract calls work (diagram)
 - CI/CD badge: [![CI](https://github.com/USERNAME/stellarsave/actions/workflows/ci.yml/badge.svg)]

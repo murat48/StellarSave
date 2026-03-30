@@ -7,12 +7,10 @@ import {
   Contract,
   Address,
   scValToNative,
-  nativeToScVal,
 } from "@stellar/stellar-sdk";
 import { useWallet } from "../contexts/WalletContext";
 
 const TOKEN_CONTRACT_ID = import.meta.env.VITE_TOKEN_CONTRACT_ID as string;
-const FAUCET_AMOUNT = BigInt(1000 * 10_000_000); // 1000 SAVE
 
 export default function TokenFaucet() {
   const { isConnected, address, signTransaction } = useWallet();
@@ -65,9 +63,8 @@ export default function TokenFaucet() {
       })
         .addOperation(
           contract.call(
-            "mint",
-            new Address(address).toScVal(),
-            nativeToScVal(FAUCET_AMOUNT, { type: "i128" })
+            "faucet",
+            new Address(address).toScVal()
           )
         )
         .setTimeout(30)
@@ -79,12 +76,12 @@ export default function TokenFaucet() {
         TransactionBuilder.fromXDR(signed, Networks.TESTNET)
       );
 
-      if (response.status === "ERROR") throw new Error("Mint transaction failed");
+      if (response.status === "ERROR") throw new Error("Faucet transaction failed");
 
       for (let i = 0; i < 30; i++) {
         const result = await server.getTransaction(response.hash);
         if (result.status === "SUCCESS") break;
-        if (result.status === "FAILED") throw new Error("Mint transaction failed on-chain");
+        if (result.status === "FAILED") throw new Error("Faucet transaction failed on-chain");
         await new Promise((r) => setTimeout(r, 2000));
       }
 
@@ -113,7 +110,7 @@ export default function TokenFaucet() {
           disabled={loading || !isConnected}
           className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-sm transition-colors"
         >
-          {loading ? "Minting..." : "Get Test SAVE Tokens"}
+          {loading ? "Claiming..." : "Get Test SAVE Tokens"}
         </button>
 
         {status && <p className="text-sm text-slate-300 text-center">{status}</p>}

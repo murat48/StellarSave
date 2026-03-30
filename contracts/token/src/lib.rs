@@ -54,6 +54,16 @@ impl SaveToken {
             .publish((symbol_short!("mint"), to), amount);
     }
 
+    /// Testnet-only faucet: anyone can call, mints 1000 SAVE to caller
+    pub fn faucet(env: Env, to: Address) {
+        to.require_auth();
+        let amount: i128 = 1_000 * 10_000_000; // 1000 SAVE
+        let balance = get_balance(&env, &to);
+        set_balance(&env, &to, balance + amount);
+        env.events()
+            .publish((symbol_short!("faucet"), to.clone()), amount);
+    }
+
     pub fn balance(env: Env, id: Address) -> i128 {
         get_balance(&env, &id)
     }
