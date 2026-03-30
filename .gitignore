@@ -1,0 +1,23 @@
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+
+# Rust / Soroban build artifacts
+contracts/target/
+*.wasm
+
+# Environment files
+frontend/.env
+.env
+
+# Editor
+.vscode/
+.idea/
+*.suo
+*.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
