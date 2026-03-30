@@ -81,6 +81,13 @@ export default function TokenFaucet() {
 
       if (response.status === "ERROR") throw new Error("Mint transaction failed");
 
+      for (let i = 0; i < 30; i++) {
+        const result = await server.getTransaction(response.hash);
+        if (result.status === "SUCCESS") break;
+        if (result.status === "FAILED") throw new Error("Mint transaction failed on-chain");
+        await new Promise((r) => setTimeout(r, 2000));
+      }
+
       setStatus("✅ 1000 SAVE tokens added to your wallet!");
       await fetchBalance();
     } catch (err: unknown) {

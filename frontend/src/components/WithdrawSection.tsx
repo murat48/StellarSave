@@ -120,7 +120,15 @@ export default function WithdrawSection({ onWithdrew }: WithdrawSectionProps) {
 
       const prepared = await server.prepareTransaction(tx);
       const signed = await signTransaction(prepared.toXDR());
-      await server.sendTransaction(TransactionBuilder.fromXDR(signed, Networks.TESTNET));
+      const submitted = await server.sendTransaction(TransactionBuilder.fromXDR(signed, Networks.TESTNET));
+      if (submitted.status === "ERROR") throw new Error("Withdraw transaction rejected");
+
+      for (let i = 0; i < 30; i++) {
+        const result = await server.getTransaction(submitted.hash);
+        if (result.status === "SUCCESS") break;
+        if (result.status === "FAILED") throw new Error("Withdraw transaction failed on-chain");
+        await new Promise((r) => setTimeout(r, 2000));
+      }
 
       setStatus("✅ Withdrawn & rewards claimed!");
       setSavings(null);

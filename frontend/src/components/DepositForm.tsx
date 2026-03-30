@@ -41,13 +41,24 @@ export default function DepositForm({ onDeposited }: DepositFormProps) {
         await import("@stellar/stellar-sdk");
 
       const server = new rpc.Server(import.meta.env.VITE_RPC_URL, { allowHttp: false });
-      const account = await server.getAccount(address);
       const latestLedger = await server.getLatestLedger();
       const expirationLedger = latestLedger.sequence + lockPeriod.ledgers + 500;
       const amountStroops = BigInt(Math.round(amountNum * 10_000_000));
 
+      // Helper: poll until tx confirmed
+      const waitForTx = async (hash: string) => {
+        for (let i = 0; i < 30; i++) {
+          const result = await server.getTransaction(hash);
+          if (result.status === "SUCCESS") return result;
+          if (result.status === "FAILED") throw new Error(`Transaction failed: ${hash}`);
+          await new Promise((r) => setTimeout(r, 2000));
+        }
+        throw new Error("Transaction timed out");
+      };
+
       // Step 1: Approve token
       setStatus("Step 1/2: Approving token allowance...");
+      const account = await server.getAccount(address);
       const tokenContract = new Contract(TOKEN_CONTRACT_ID);
       const approveTx = new TransactionBuilder(account, {
         fee: BASE_FEE,
@@ -67,12 +78,13 @@ export default function DepositForm({ onDeposited }: DepositFormProps) {
 
       const preparedApprove = await server.prepareTransaction(approveTx);
       const signedApprove = await signTransaction(preparedApprove.toXDR());
-      const approveResult = await server.sendTransaction(
+      const approveSubmit = await server.sendTransaction(
         TransactionBuilder.fromXDR(signedApprove, Networks.TESTNET)
       );
-      if (approveResult.status === "ERROR") throw new Error("Approve failed");
+      if (approveSubmit.status === "ERROR") throw new Error("Approve transaction rejected");
+      await waitForTx(approveSubmit.hash);
 
-      // Step 2: Deposit
+      // Step 2: Deposit (fetch fresh account after approve confirmed)
       setStatus("Step 2/2: Locking funds...");
       const account2 = await server.getAccount(address);
       const savingsContract = new Contract(SAVINGS_CONTRACT_ID);
@@ -93,9 +105,11 @@ export default function DepositForm({ onDeposited }: DepositFormProps) {
 
       const preparedDeposit = await server.prepareTransaction(depositTx);
       const signedDeposit = await signTransaction(preparedDeposit.toXDR());
-      await server.sendTransaction(
+      const depositSubmit = await server.sendTransaction(
         TransactionBuilder.fromXDR(signedDeposit, Networks.TESTNET)
       );
+      if (depositSubmit.status === "ERROR") throw new Error("Deposit transaction rejected");
+      await waitForTx(depositSubmit.hash);
 
       setStatus("✅ Funds locked successfully!");
       setAmount("");
