@@ -4,7 +4,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Stellar Testnet](https://img.shields.io/badge/Network-Stellar%20Testnet-blue)](https://testnet.steexp.com)
 
-> **Live Demo:** [https://stellarsave.vercel.app](https://stellarsave.vercel.app) _(deploy sonrası güncellenecek)_
+> **Live Demo:**
+
+[https://stellar-voting-dapp-pi.vercel.app](https://stellar-voting-dapp-pi.vercel.app) 
 
 ---
 
