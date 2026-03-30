@@ -37,10 +37,10 @@ export default function DepositForm({ onDeposited }: DepositFormProps) {
     setStatus(null);
 
     try {
-      const { SorobanRpc, TransactionBuilder, Networks, BASE_FEE, Contract, nativeToScVal, Address } =
+      const { rpc, TransactionBuilder, Networks, BASE_FEE, Contract, nativeToScVal, Address } =
         await import("@stellar/stellar-sdk");
 
-      const server = new SorobanRpc.Server(import.meta.env.VITE_RPC_URL, { allowHttp: false });
+      const server = new rpc.Server(import.meta.env.VITE_RPC_URL, { allowHttp: false });
       const account = await server.getAccount(address);
       const amountStroops = BigInt(Math.round(amountNum * 10_000_000));
 

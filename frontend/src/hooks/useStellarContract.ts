@@ -1,11 +1,11 @@
 import { useCallback } from "react";
-import { SorobanRpc, TransactionBuilder, Networks, BASE_FEE, xdr, scValToNative } from "@stellar/stellar-sdk";
+import { rpc, TransactionBuilder, Networks, BASE_FEE, xdr, scValToNative } from "@stellar/stellar-sdk";
 import { useWallet } from "../contexts/WalletContext";
 
 const RPC_URL = import.meta.env.VITE_RPC_URL as string;
 const NETWORK_PASSPHRASE = Networks.TESTNET;
 
-const server = new SorobanRpc.Server(RPC_URL, { allowHttp: false });
+const server = new rpc.Server(RPC_URL, { allowHttp: false });
 
 export function useStellarContract() {
   const { address, signTransaction } = useWallet();
@@ -21,7 +21,6 @@ export function useStellarContract() {
         networkPassphrase: NETWORK_PASSPHRASE,
       })
         .addOperation(
-          // @ts-expect-error dynamic contract call
           new (await import("@stellar/stellar-sdk")).Contract(contractId).call(method, ...args)
         )
         .setTimeout(30)
@@ -55,7 +54,7 @@ export function useStellarContract() {
 
   const readContract = useCallback(
     async (contractId: string, method: string, args: xdr.ScVal[] = []): Promise<unknown> => {
-      const { Contract, nativeToScVal } = await import("@stellar/stellar-sdk");
+      const { Contract } = await import("@stellar/stellar-sdk");
       const contract = new Contract(contractId);
       const tx = new TransactionBuilder(
         await server.getAccount(address ?? "GAAZI4TCR3TY5OJHCTJC2A4QSY6CJWJH5IAJTGKIN2ER7LBNVKOCCWN"),
@@ -66,11 +65,11 @@ export function useStellarContract() {
         .build();
 
       const simResult = await server.simulateTransaction(tx);
-      if (SorobanRpc.Api.isSimulationError(simResult)) {
+      if (rpc.Api.isSimulationError(simResult)) {
         throw new Error(simResult.error);
       }
 
-      const retVal = (simResult as SorobanRpc.Api.SimulateTransactionSuccessResponse).result?.retval;
+      const retVal = (simResult as rpc.Api.SimulateTransactionSuccessResponse).result?.retval;
       return retVal ? scValToNative(retVal) : null;
     },
     [address]

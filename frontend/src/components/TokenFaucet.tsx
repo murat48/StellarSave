@@ -13,9 +13,9 @@ export default function TokenFaucet() {
   const fetchBalance = async () => {
     if (!isConnected || !address) return;
     try {
-      const { SorobanRpc, TransactionBuilder, Networks, BASE_FEE, Contract, Address, scValToNative } =
+      const { rpc, TransactionBuilder, Networks, BASE_FEE, Contract, Address, scValToNative } =
         await import("@stellar/stellar-sdk");
-      const server = new SorobanRpc.Server(import.meta.env.VITE_RPC_URL, { allowHttp: false });
+      const server = new rpc.Server(import.meta.env.VITE_RPC_URL, { allowHttp: false });
       const account = await server.getAccount(address);
       const contract = new Contract(TOKEN_CONTRACT_ID);
 
@@ -28,8 +28,8 @@ export default function TokenFaucet() {
         .build();
 
       const sim = await server.simulateTransaction(tx);
-      if (!SorobanRpc.Api.isSimulationError(sim)) {
-        const retVal = (sim as SorobanRpc.Api.SimulateTransactionSuccessResponse).result?.retval;
+      if (!rpc.Api.isSimulationError(sim)) {
+        const retVal = (sim as rpc.Api.SimulateTransactionSuccessResponse).result?.retval;
         if (retVal) setBalance(BigInt(scValToNative(retVal) as number));
       }
     } catch {
@@ -47,9 +47,9 @@ export default function TokenFaucet() {
     setStatus(null);
 
     try {
-      const { SorobanRpc, TransactionBuilder, Networks, BASE_FEE, Contract, Address, nativeToScVal } =
+      const { rpc, TransactionBuilder, Networks, BASE_FEE, Contract, Address, nativeToScVal } =
         await import("@stellar/stellar-sdk");
-      const server = new SorobanRpc.Server(import.meta.env.VITE_RPC_URL, { allowHttp: false });
+      const server = new rpc.Server(import.meta.env.VITE_RPC_URL, { allowHttp: false });
       const account = await server.getAccount(address);
       const contract = new Contract(TOKEN_CONTRACT_ID);
 

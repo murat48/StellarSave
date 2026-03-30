@@ -1,23 +1,23 @@
 import React, { createContext, useCallback, useContext, useState } from "react";
 import {
   StellarWalletsKit,
-  WalletNetwork,
-  allowAllModules,
+  Networks,
+  defaultModules,
   FREIGHTER_ID,
 } from "@creit.tech/stellar-wallets-kit";
 
-const kit = new StellarWalletsKit({
-  network: WalletNetwork.TESTNET,
+// Initialize once — all methods are static in the new API
+StellarWalletsKit.init({
+  network: Networks.TESTNET,
   selectedWalletId: FREIGHTER_ID,
-  modules: allowAllModules(),
+  modules: defaultModules(),
 });
 
 interface WalletContextType {
-  kit: StellarWalletsKit;
   address: string | null;
   isConnected: boolean;
   connect: () => Promise<void>;
-  disconnect: () => void;
+  disconnect: () => Promise<void>;
   signTransaction: (xdr: string) => Promise<string>;
 }
 
@@ -29,33 +29,25 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({
   const [address, setAddress] = useState<string | null>(null);
 
   const connect = useCallback(async () => {
-    await kit.openModal({
-      onWalletSelected: async (option) => {
-        kit.setWallet(option.id);
-        const { address: addr } = await kit.getAddress();
-        setAddress(addr);
-      },
-    });
+    const { address: addr } = await StellarWalletsKit.authModal();
+    setAddress(addr);
   }, []);
 
-  const disconnect = useCallback(() => {
+  const disconnect = useCallback(async () => {
+    await StellarWalletsKit.disconnect();
     setAddress(null);
   }, []);
 
-  const signTransaction = useCallback(
-    async (xdr: string): Promise<string> => {
-      const { signedTxXdr } = await kit.signTransaction(xdr, {
-        networkPassphrase: WalletNetwork.TESTNET,
-      });
-      return signedTxXdr;
-    },
-    []
-  );
+  const signTransaction = useCallback(async (xdr: string): Promise<string> => {
+    const { signedTxXdr } = await StellarWalletsKit.signTransaction(xdr, {
+      networkPassphrase: Networks.TESTNET,
+    });
+    return signedTxXdr;
+  }, []);
 
   return (
     <WalletContext.Provider
       value={{
-        kit,
         address,
         isConnected: !!address,
         connect,

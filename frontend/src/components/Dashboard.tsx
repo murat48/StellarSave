@@ -60,7 +60,7 @@ export default function Dashboard({
         {cards.map((card) => (
           <div
             key={card.label}
-            className={`rounded-2xl bg-gradient-to-br ${card.color} p-5 shadow-lg`}
+            className={`rounded-2xl bg-linear-to-br ${card.color} p-5 shadow-lg`}
           >
             <div className="text-2xl mb-2">{card.icon}</div>
             <div className="text-sm text-white/70 font-medium">{card.label}</div>

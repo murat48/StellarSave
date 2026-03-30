@@ -14,14 +14,6 @@ function formatSave(amount: bigint): string {
   return (Number(amount) / 10_000_000).toFixed(2);
 }
 
-function ledgersToDate(startLedger: number, lockPeriod: number): string {
-  const unlockLedger = startLedger + lockPeriod;
-  // Approximate: 5s per ledger, testnet genesis ~2024-01-01
-  const approxMs = unlockLedger * 5 * 1000;
-  const d = new Date(Date.now() + approxMs - Date.now());
-  return d.toLocaleDateString();
-}
-
 function Countdown({ remainingLedgers }: { remainingLedgers: number }) {
   const totalSeconds = remainingLedgers * 5;
   const days = Math.floor(totalSeconds / 86400);
@@ -56,9 +48,9 @@ export default function WithdrawSection({ onWithdrew }: WithdrawSectionProps) {
 
     const fetchSavings = async () => {
       try {
-        const { SorobanRpc, TransactionBuilder, Networks, BASE_FEE, Contract, Address } =
+        const { rpc, TransactionBuilder, Networks, BASE_FEE, Contract, Address } =
           await import("@stellar/stellar-sdk");
-        const server = new SorobanRpc.Server(import.meta.env.VITE_RPC_URL, { allowHttp: false });
+        const server = new rpc.Server(import.meta.env.VITE_RPC_URL, { allowHttp: false });
         const contract = new Contract(SAVINGS_CONTRACT_ID);
 
         // Use a dummy account for simulation
@@ -72,10 +64,10 @@ export default function WithdrawSection({ onWithdrew }: WithdrawSectionProps) {
           .build();
 
         const sim = await server.simulateTransaction(getTx);
-        if (SorobanRpc.Api.isSimulationError(sim)) return;
+        if (rpc.Api.isSimulationError(sim)) return;
 
         const { scValToNative } = await import("@stellar/stellar-sdk");
-        const retVal = (sim as SorobanRpc.Api.SimulateTransactionSuccessResponse).result?.retval;
+        const retVal = (sim as rpc.Api.SimulateTransactionSuccessResponse).result?.retval;
         if (retVal) {
           const record = scValToNative(retVal) as SavingsRecord;
           setSavings(record);
@@ -89,8 +81,8 @@ export default function WithdrawSection({ onWithdrew }: WithdrawSectionProps) {
             .setTimeout(30)
             .build();
           const remSim = await server.simulateTransaction(remTx);
-          if (!SorobanRpc.Api.isSimulationError(remSim)) {
-            const remVal = (remSim as SorobanRpc.Api.SimulateTransactionSuccessResponse).result?.retval;
+          if (!rpc.Api.isSimulationError(remSim)) {
+            const remVal = (remSim as rpc.Api.SimulateTransactionSuccessResponse).result?.retval;
             if (remVal) setRemaining(Number(scValToNative(remVal)));
           }
         }
@@ -108,9 +100,9 @@ export default function WithdrawSection({ onWithdrew }: WithdrawSectionProps) {
     setStatus(null);
 
     try {
-      const { SorobanRpc, TransactionBuilder, Networks, BASE_FEE, Contract, Address } =
+      const { rpc, TransactionBuilder, Networks, BASE_FEE, Contract, Address } =
         await import("@stellar/stellar-sdk");
-      const server = new SorobanRpc.Server(import.meta.env.VITE_RPC_URL, { allowHttp: false });
+      const server = new rpc.Server(import.meta.env.VITE_RPC_URL, { allowHttp: false });
       const account = await server.getAccount(address);
       const contract = new Contract(SAVINGS_CONTRACT_ID);
 
