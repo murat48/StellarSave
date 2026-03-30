@@ -1,4 +1,14 @@
 import { useEffect, useState } from "react";
+import {
+  rpc,
+  TransactionBuilder,
+  Networks,
+  BASE_FEE,
+  Contract,
+  Address,
+  scValToNative,
+  nativeToScVal,
+} from "@stellar/stellar-sdk";
 import { useWallet } from "../contexts/WalletContext";
 
 const TOKEN_CONTRACT_ID = import.meta.env.VITE_TOKEN_CONTRACT_ID as string;
@@ -13,8 +23,6 @@ export default function TokenFaucet() {
   const fetchBalance = async () => {
     if (!isConnected || !address) return;
     try {
-      const { rpc, TransactionBuilder, Networks, BASE_FEE, Contract, Address, scValToNative } =
-        await import("@stellar/stellar-sdk");
       const server = new rpc.Server(import.meta.env.VITE_RPC_URL, { allowHttp: false });
       const account = await server.getAccount(address);
       const contract = new Contract(TOKEN_CONTRACT_ID);
@@ -47,8 +55,6 @@ export default function TokenFaucet() {
     setStatus(null);
 
     try {
-      const { rpc, TransactionBuilder, Networks, BASE_FEE, Contract, Address, nativeToScVal } =
-        await import("@stellar/stellar-sdk");
       const server = new rpc.Server(import.meta.env.VITE_RPC_URL, { allowHttp: false });
       const account = await server.getAccount(address);
       const contract = new Contract(TOKEN_CONTRACT_ID);
