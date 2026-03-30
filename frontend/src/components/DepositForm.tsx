@@ -12,9 +12,10 @@ const TOKEN_CONTRACT_ID = import.meta.env.VITE_TOKEN_CONTRACT_ID as string;
 
 interface DepositFormProps {
   onDeposited?: () => void;
+  activeSavings?: { amount: bigint; timeRemaining: number } | null;
 }
 
-export default function DepositForm({ onDeposited }: DepositFormProps) {
+export default function DepositForm({ onDeposited, activeSavings }: DepositFormProps) {
   const { isConnected, signTransaction, address } = useWallet();
   const [amount, setAmount] = useState("");
   const [lockPeriod, setLockPeriod] = useState(LOCK_PERIODS[0]);
@@ -124,6 +125,25 @@ export default function DepositForm({ onDeposited }: DepositFormProps) {
   return (
     <section>
       <h2 className="text-xl font-bold text-white mb-4">Deposit & Lock</h2>
+      {activeSavings ? (
+        <div className="bg-slate-800 rounded-2xl p-5 space-y-4 text-center">
+          <div className="py-4">
+            <div className="text-4xl mb-3">🔒</div>
+            <p className="text-slate-300 font-semibold">Active Lock</p>
+            <p className="text-2xl font-bold text-white mt-2">
+              {(Number(activeSavings.amount) / 10_000_000).toFixed(2)} SAVE
+            </p>
+            <p className="text-sm text-slate-400 mt-2">
+              {activeSavings.timeRemaining > 0
+                ? `Unlocks in ~${Math.round((activeSavings.timeRemaining * 5) / 86400)} day(s)`
+                : "✅ Ready to withdraw!"}
+            </p>
+          </div>
+          <p className="text-xs text-slate-500">
+            Withdraw your current savings to start a new lock.
+          </p>
+        </div>
+      ) : (
       <div className="bg-slate-800 rounded-2xl p-5 space-y-4">
         <div>
           <label className="block text-sm text-slate-400 mb-1">Amount (SAVE)</label>
@@ -169,6 +189,7 @@ export default function DepositForm({ onDeposited }: DepositFormProps) {
           <p className="text-sm text-slate-300 text-center">{status}</p>
         )}
       </div>
+      )}
     </section>
   );
 }

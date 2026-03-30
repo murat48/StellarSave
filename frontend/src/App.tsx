@@ -1,21 +1,100 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { WalletProvider } from "./contexts/WalletContext";
+import { useWallet } from "./contexts/WalletContext";
 import WalletButton from "./components/WalletButton";
 import Dashboard from "./components/Dashboard";
 import DepositForm from "./components/DepositForm";
 import WithdrawSection from "./components/WithdrawSection";
 import TokenFaucet from "./components/TokenFaucet";
+import {
+  rpc,
+  TransactionBuilder,
+  Networks,
+  BASE_FEE,
+  Contract,
+  Address,
+  scValToNative,
+  xdr,
+} from "@stellar/stellar-sdk";
 import "./index.css";
 
 const TOKEN_CONTRACT_ID = import.meta.env.VITE_TOKEN_CONTRACT_ID ?? "Not deployed";
 const SAVINGS_CONTRACT_ID = import.meta.env.VITE_SAVINGS_CONTRACT_ID ?? "Not deployed";
 const REWARDS_CONTRACT_ID = import.meta.env.VITE_REWARDS_CONTRACT_ID ?? "Not deployed";
+const RPC_URL = import.meta.env.VITE_RPC_URL as string;
+
+interface SavingsRecord {
+  amount: bigint;
+  start_ledger: number;
+  lock_period: number;
+  is_active: boolean;
+}
+
+const server = new rpc.Server(RPC_URL, { allowHttp: false });
+
+async function simulateRead(
+  contractId: string,
+  method: string,
+  args: xdr.ScVal[],
+  sourceAddress: string
+): Promise<unknown> {
+  try {
+    const contract = new Contract(contractId);
+    const account = await server.getAccount(sourceAddress);
+    const tx = new TransactionBuilder(account, {
+      fee: BASE_FEE,
+      networkPassphrase: Networks.TESTNET,
+    })
+      .addOperation(contract.call(method, ...args))
+      .setTimeout(30)
+      .build();
+    const sim = await server.simulateTransaction(tx);
+    if (rpc.Api.isSimulationError(sim)) return null;
+    const retVal = (sim as rpc.Api.SimulateTransactionSuccessResponse).result?.retval;
+    return retVal ? scValToNative(retVal) : null;
+  } catch {
+    return null;
+  }
+}
 
 function AppInner() {
+  const { address, isConnected } = useWallet();
   const [menuOpen, setMenuOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [savingsRecord, setSavingsRecord] = useState<SavingsRecord | null>(null);
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [apy, setApy] = useState(5);
 
   const handleRefresh = () => setRefreshKey((k) => k + 1);
+
+  const fetchData = useCallback(async () => {
+    if (!isConnected || !address) {
+      setSavingsRecord(null);
+      setTimeRemaining(0);
+      return;
+    }
+    const addrScVal = new Address(address).toScVal();
+    const savings = await simulateRead(SAVINGS_CONTRACT_ID, "get_savings", [addrScVal], address);
+    const rec = (savings as SavingsRecord | null) ?? null;
+    setSavingsRecord(rec);
+    if (rec?.is_active) {
+      const remaining = await simulateRead(
+        SAVINGS_CONTRACT_ID,
+        "get_time_remaining",
+        [addrScVal],
+        address
+      );
+      setTimeRemaining((remaining as number) ?? 0);
+    } else {
+      setTimeRemaining(0);
+    }
+    const apyValue = await simulateRead(REWARDS_CONTRACT_ID, "get_apy", [], address);
+    setApy((apyValue as number) ?? 5);
+  }, [address, isConnected]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData, refreshKey]);
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
@@ -65,14 +144,28 @@ function AppInner() {
         </div>
 
         <Dashboard
-          currentSavings={0}
-          timeRemainingLedgers={0}
-          expectedReward={0}
-          apy={5}
+          currentSavings={savingsRecord?.is_active ? Number(savingsRecord.amount) : 0}
+          timeRemainingLedgers={timeRemaining}
+          expectedReward={
+            savingsRecord?.is_active
+              ? Math.floor(
+                  (Number(savingsRecord.amount) * 5 * savingsRecord.lock_period) /
+                    (100 * 100_000)
+                )
+              : 0
+          }
+          apy={apy}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <DepositForm onDeposited={handleRefresh} />
+          <DepositForm
+            onDeposited={() => { handleRefresh(); void fetchData(); }}
+            activeSavings={
+              savingsRecord?.is_active
+                ? { amount: savingsRecord.amount, timeRemaining }
+                : null
+            }
+          />
           <WithdrawSection onWithdrew={handleRefresh} />
         </div>
 
