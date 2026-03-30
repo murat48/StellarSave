@@ -42,6 +42,8 @@ export default function DepositForm({ onDeposited }: DepositFormProps) {
 
       const server = new rpc.Server(import.meta.env.VITE_RPC_URL, { allowHttp: false });
       const account = await server.getAccount(address);
+      const latestLedger = await server.getLatestLedger();
+      const expirationLedger = latestLedger.sequence + lockPeriod.ledgers + 500;
       const amountStroops = BigInt(Math.round(amountNum * 10_000_000));
 
       // Step 1: Approve token
@@ -57,7 +59,7 @@ export default function DepositForm({ onDeposited }: DepositFormProps) {
             new Address(address).toScVal(),
             new Address(SAVINGS_CONTRACT_ID).toScVal(),
             nativeToScVal(amountStroops, { type: "i128" }),
-            nativeToScVal(account.sequenceNumber() + 100000, { type: "u32" })
+            nativeToScVal(expirationLedger, { type: "u32" })
           )
         )
         .setTimeout(30)
