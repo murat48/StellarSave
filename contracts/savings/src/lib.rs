@@ -68,7 +68,7 @@ impl SavingsContract {
         let contract_address = env.current_contract_address();
 
         let token_client = token_interface::TokenClient::new(&env, &token_id);
-        token_client.transfer_from(&user, &user, &contract_address, &amount);
+        token_client.transfer_from(&contract_address, &user, &contract_address, &amount);
 
         let record = SavingsRecord {
             amount,

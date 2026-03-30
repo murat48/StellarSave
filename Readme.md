@@ -28,8 +28,8 @@ StellarSave is a fully on-chain DeFi savings application built on the **Stellar 
 | Contract   | Address                 | Network         |
 | ---------- | ----------------------- | --------------- |
 | SAVE Token | `CCMMAIQ7SDJ62L2FOPONMTIWCZMHDFAV7W2AP3THPP4MTUQAH4RB7ZAN` | Stellar Testnet |
-| Savings    | `CDTWBL56NWSAFJOT4YVSI2LUDL2GDPD5DWTIOLMUYYEKCNHLVCGZVHUZ` | Stellar Testnet |
-| Rewards    | `CB7AGMQAXY2VZS3XICNUYNJNNXNKFNG2662J4U45D5KC6KWNAK456LVL` | Stellar Testnet |
+| Savings    | `CDDWOGYZLZXDYIPY5UDQMJ2UQCMHNWFNWDHQWN272MKMG4Y7BJMYTG6L` | Stellar Testnet |
+| Rewards    | `CBQHNYLC2M7GKLZFDKFDWMNBRG675OB3V6BBCCQIB6OHSJACMCH3I4DJ` | Stellar Testnet |
 
 > Run `./scripts/deploy.sh` to deploy and auto-populate `frontend/.env`.
 
