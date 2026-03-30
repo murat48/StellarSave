@@ -1,4 +1,13 @@
 import { useEffect, useState } from "react";
+import {
+  rpc,
+  TransactionBuilder,
+  Networks,
+  BASE_FEE,
+  Contract,
+  Address,
+  scValToNative,
+} from "@stellar/stellar-sdk";
 import { useWallet } from "../contexts/WalletContext";
 
 const SAVINGS_CONTRACT_ID = import.meta.env.VITE_SAVINGS_CONTRACT_ID as string;
@@ -48,8 +57,6 @@ export default function WithdrawSection({ onWithdrew }: WithdrawSectionProps) {
 
     const fetchSavings = async () => {
       try {
-        const { rpc, TransactionBuilder, Networks, BASE_FEE, Contract, Address } =
-          await import("@stellar/stellar-sdk");
         const server = new rpc.Server(import.meta.env.VITE_RPC_URL, { allowHttp: false });
         const contract = new Contract(SAVINGS_CONTRACT_ID);
 
@@ -66,7 +73,6 @@ export default function WithdrawSection({ onWithdrew }: WithdrawSectionProps) {
         const sim = await server.simulateTransaction(getTx);
         if (rpc.Api.isSimulationError(sim)) return;
 
-        const { scValToNative } = await import("@stellar/stellar-sdk");
         const retVal = (sim as rpc.Api.SimulateTransactionSuccessResponse).result?.retval;
         if (retVal) {
           const record = scValToNative(retVal) as SavingsRecord;
@@ -100,8 +106,6 @@ export default function WithdrawSection({ onWithdrew }: WithdrawSectionProps) {
     setStatus(null);
 
     try {
-      const { rpc, TransactionBuilder, Networks, BASE_FEE, Contract, Address } =
-        await import("@stellar/stellar-sdk");
       const server = new rpc.Server(import.meta.env.VITE_RPC_URL, { allowHttp: false });
       const account = await server.getAccount(address);
       const contract = new Contract(SAVINGS_CONTRACT_ID);
