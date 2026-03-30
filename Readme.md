@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Stellar Testnet](https://img.shields.io/badge/Network-Stellar%20Testnet-blue)](https://testnet.steexp.com)
 
-> **Live Demo:** [https://stellarsave.vercel.app](https://stellarsave.vercel.app) *(deploy sonrası güncellenecek)*
+> **Live Demo:** [https://stellarsave.vercel.app](https://stellarsave.vercel.app) _(deploy sonrası güncellenecek)_
 
 ---
 
@@ -25,11 +25,11 @@ StellarSave is a fully on-chain DeFi savings application built on the **Stellar 
 
 ## Contract Addresses (Stellar Testnet)
 
-| Contract    | Address               | Network          |
-|-------------|-----------------------|------------------|
-| SAVE Token  | `C...` *(after deploy)* | Stellar Testnet |
-| Savings     | `C...` *(after deploy)* | Stellar Testnet |
-| Rewards     | `C...` *(after deploy)* | Stellar Testnet |
+| Contract   | Address                 | Network         |
+| ---------- | ----------------------- | --------------- |
+| SAVE Token | `CCMMAIQ7SDJ62L2FOPONMTIWCZMHDFAV7W2AP3THPP4MTUQAH4RB7ZAN` | Stellar Testnet |
+| Savings    | `CDTWBL56NWSAFJOT4YVSI2LUDL2GDPD5DWTIOLMUYYEKCNHLVCGZVHUZ` | Stellar Testnet |
+| Rewards    | `CB7AGMQAXY2VZS3XICNUYNJNNXNKFNG2662J4U45D5KC6KWNAK456LVL` | Stellar Testnet |
 
 > Run `./scripts/deploy.sh` to deploy and auto-populate `frontend/.env`.
 
@@ -71,15 +71,15 @@ $$\text{reward} = \text{principal} \times 0.05 \times \frac{\text{duration\_ledg
 
 ## Tech Stack
 
-| Layer       | Technology                               |
-|-------------|------------------------------------------|
-| Blockchain  | Stellar Testnet (Soroban)                |
-| Contracts   | Rust + Soroban SDK                       |
-| Frontend    | React 18 + Vite + TypeScript             |
-| Styling     | Tailwind CSS v4                          |
-| Wallet      | @creit-tech/stellar-wallets-kit          |
-| SDK         | stellar-sdk                             |
-| CI/CD       | GitHub Actions + Vercel                  |
+| Layer      | Technology                      |
+| ---------- | ------------------------------- |
+| Blockchain | Stellar Testnet (Soroban)       |
+| Contracts  | Rust + Soroban SDK              |
+| Frontend   | React 18 + Vite + TypeScript    |
+| Styling    | Tailwind CSS v4                 |
+| Wallet     | @creit-tech/stellar-wallets-kit |
+| SDK        | stellar-sdk                     |
+| CI/CD      | GitHub Actions + Vercel         |
 
 ---
 
@@ -118,6 +118,7 @@ export STELLAR_SECRET=your_testnet_secret_key
 ### 4. Fund your account
 
 Use the Stellar testnet faucet:
+
 ```bash
 curl "https://friendbot.stellar.org?addr=YOUR_PUBLIC_KEY"
 ```
@@ -164,11 +165,11 @@ StellarSave/
 
 ## Lock Periods
 
-| Period   | Ledgers   | Approx. Time |
-|----------|-----------|--------------|
-| 1 Week   | 50,400    | ~7 days      |
-| 1 Month  | 201,600   | ~28 days     |
-| 3 Months | 604,800   | ~84 days     |
+| Period   | Ledgers | Approx. Time |
+| -------- | ------- | ------------ |
+| 1 Week   | 50,400  | ~7 days      |
+| 1 Month  | 201,600 | ~28 days     |
+| 3 Months | 604,800 | ~84 days     |
 
 > 1 Stellar ledger ≈ 5 seconds
 
@@ -176,12 +177,12 @@ StellarSave/
 
 ## Token Details
 
-| Property | Value       |
-|----------|-------------|
-| Name     | SaveToken   |
-| Symbol   | SAVE        |
-| Decimals | 7           |
-| Network  | Testnet     |
+| Property | Value     |
+| -------- | --------- |
+| Name     | SaveToken |
+| Symbol   | SAVE      |
+| Decimals | 7         |
+| Network  | Testnet   |
 
 > 1 SAVE = 10,000,000 stroops (7 decimal places)
 
@@ -200,6 +201,7 @@ GitHub Actions
 ```
 
 Required GitHub Secrets:
+
 - `VERCEL_TOKEN`
 - `VERCEL_ORG_ID`
 - `VERCEL_PROJECT_ID`
@@ -392,8 +394,8 @@ Write a Soroban smart contract in Rust that:
 - Makes INTER-CONTRACT CALL to token contract to mint rewards
 - Functions:
   - initialize(token_contract_id, savings_contract_id)
-  - calculate_and_pay(user, principal, duration_ledgers)
-    → reward = principal _ 5% _ (duration / 100000)
+  - calculate*and_pay(user, principal, duration_ledgers)
+    → reward = principal * 5% \_ (duration / 100000)
     → calls token_contract.mint(user, reward_amount)
     → only callable by savings_contract
   - get_apy() → returns 5
@@ -604,9 +606,9 @@ Write a complete README with:
 - Contract addresses table:
   | Contract | Address | Network |
   |----------|---------|---------|
-  | SAVE Token | C... | Stellar Testnet |
-  | Savings | C... | Stellar Testnet |
-  | Rewards | C... | Stellar Testnet |
+| SAVE Token  | `CCMMAIQ7SDJ62L2FOPONMTIWCZMHDFAV7W2AP3THPP4MTUQAH4RB7ZAN` | Stellar Testnet |
+| Savings     | `CDTWBL56NWSAFJOT4YVSI2LUDL2GDPD5DWTIOLMUYYEKCNHLVCGZVHUZ` | Stellar Testnet |
+| Rewards     | `CB7AGMQAXY2VZS3XICNUYNJNNXNKFNG2662J4U45D5KC6KWNAK456LVL` | Stellar Testnet |
 - Setup instructions (local dev)
 - How inter-contract calls work (diagram)
 - CI/CD badge: [![CI](https://github.com/USERNAME/stellarsave/actions/workflows/ci.yml/badge.svg)]
