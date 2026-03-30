@@ -36,6 +36,25 @@ StellarSave is a fully on-chain DeFi savings application built on the **Stellar 
 > Run `./scripts/deploy.sh` to deploy and auto-populate `frontend/.env`.
 
 ---
+##  CI/CD pipeline running
+<br>
+<img src="/3.jpg" alt="" width="600"/><br>
+
+## Token Contract 
+<br>
+<img src="/tokencontract.jpg" alt="" width="600"/><br>
+
+## Mobile View / Tablet
+<br>
+<img src="/1.jpg" alt="" width="600"/><br>
+<br>
+<img src="/2.jpg" alt="" width="600"/><br>
+
+## Savings Contract 
+<br>
+<img src="/savingscontract.jpg" alt="" width="600"/><br>
+
+
 
 ## Architecture — Inter-Contract Calls
 
