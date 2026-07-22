@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useWallet } from "../contexts/WalletContext";
 import { NETWORK_PASSPHRASE } from "../config";
+import { rpc as rpcSdk } from "@stellar/stellar-sdk";
 
 const LOCK_PERIODS: { label: string; ledgers: number }[] = [
   { label: "1 Week", ledgers: 50400 },
@@ -58,6 +59,31 @@ export default function DepositForm({ onDeposited, activeSavings }: DepositFormP
         throw new Error("Transaction timed out");
       };
 
+      // Pre-check: verify user has enough SAVE balance
+      setStatus("Checking SAVE balance...");
+      const { scValToNative } = await import("@stellar/stellar-sdk");
+      const tokenCheck = new Contract(TOKEN_CONTRACT_ID);
+      const accountForCheck = await server.getAccount(address);
+      const balanceTx = new TransactionBuilder(accountForCheck, {
+        fee: BASE_FEE,
+        networkPassphrase: NETWORK_PASSPHRASE,
+      })
+        .addOperation(tokenCheck.call("balance", new Address(address).toScVal()))
+        .setTimeout(30)
+        .build();
+      const balanceSim = await server.simulateTransaction(balanceTx);
+      if (!rpcSdk.Api.isSimulationError(balanceSim)) {
+        const retVal = (balanceSim as rpcSdk.Api.SimulateTransactionSuccessResponse).result?.retval;
+        if (retVal) {
+          const bal = scValToNative(retVal) as bigint;
+          if (bal < amountStroops) {
+            throw new Error(
+              `Insufficient SAVE balance. You have ${(Number(bal) / 10_000_000).toFixed(2)} SAVE but need ${amountNum} SAVE. Use the faucet to get tokens first.`
+            );
+          }
+        }
+      }
+
       // Step 1: Approve token
       setStatus("Step 1/2: Approving token allowance...");
       const account = await server.getAccount(address);
@@ -85,6 +111,32 @@ export default function DepositForm({ onDeposited, activeSavings }: DepositFormP
       );
       if (approveSubmit.status === "ERROR") throw new Error("Approve transaction rejected");
       await waitForTx(approveSubmit.hash);
+
+      // Verify allowance was actually set
+      const allowanceCheckAccount = await server.getAccount(address);
+      const allowanceTx = new TransactionBuilder(allowanceCheckAccount, {
+        fee: BASE_FEE,
+        networkPassphrase: NETWORK_PASSPHRASE,
+      })
+        .addOperation(
+          new Contract(TOKEN_CONTRACT_ID).call(
+            "allowance",
+            new Address(address).toScVal(),
+            new Address(SAVINGS_CONTRACT_ID).toScVal()
+          )
+        )
+        .setTimeout(30)
+        .build();
+      const allowanceSim = await server.simulateTransaction(allowanceTx);
+      if (!rpcSdk.Api.isSimulationError(allowanceSim)) {
+        const aRetVal = (allowanceSim as rpcSdk.Api.SimulateTransactionSuccessResponse).result?.retval;
+        if (aRetVal) {
+          const allowedAmt = scValToNative(aRetVal) as bigint;
+          if (allowedAmt < amountStroops) {
+            throw new Error("Approve did not set allowance correctly. Please try again.");
+          }
+        }
+      }
 
       // Step 2: Deposit (fetch fresh account after approve confirmed)
       setStatus("Step 2/2: Locking funds...");
@@ -117,7 +169,13 @@ export default function DepositForm({ onDeposited, activeSavings }: DepositFormP
       setAmount("");
       onDeposited?.();
     } catch (err: unknown) {
-      setStatus(`❌ Error: ${err instanceof Error ? err.message : String(err)}`);
+      const msg = err instanceof Error ? err.message : String(err);
+      const friendly = msg.includes("WasmVm") || msg.includes("InvalidAction")
+        ? "Contract execution failed. Make sure you have enough SAVE tokens (use the faucet) and no active lock already exists."
+        : msg.includes("allowance expired") || msg.includes("allowance exceeded")
+        ? "Token allowance issue. Please try the deposit again."
+        : msg;
+      setStatus(`❌ ${friendly}`);
     } finally {
       setLoading(false);
     }
