@@ -107,8 +107,8 @@ export default function TokenFaucet() {
     <section>
       <h2 className="text-xl font-bold text-white mb-2">SAVE Token Faucet</h2>
       <p className="text-sm text-slate-400 mb-4">
-        Deposit yapabilmek için önce buradan <span className="text-indigo-400 font-semibold">1000 SAVE</span> token al.
-        Her cüzdan adresi için sınırsız kez kullanılabilir.
+        Claim <span className="text-indigo-400 font-semibold">1000 SAVE</span> tokens to start depositing.
+        Can be claimed multiple times per wallet address.
       </p>
       <div className="bg-slate-800 rounded-2xl p-5 space-y-4">
         <div className="text-center">
