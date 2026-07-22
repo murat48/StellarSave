@@ -13,7 +13,7 @@
 
 ## What is StellarSave?
 
-StellarSave is a fully on-chain DeFi savings application built on the **Stellar blockchain** using **Soroban smart contracts**. Users connect their Stellar wallet, receive test SAVE tokens via the faucet, lock them for a chosen period, and automatically earn 5% APY rewards when they withdraw — all without any intermediary.
+StellarSave is a fully on-chain DeFi savings application built on the **Stellar blockchain** using **Soroban smart contracts**. Users connect their Stellar wallet, claim SAVE tokens via the built-in faucet, lock them for a chosen period, and automatically earn 5% APY rewards when they withdraw — all without any intermediary.
 
 ### Key Features
 
@@ -157,15 +157,19 @@ export STELLAR_SECRET=your_mainnet_secret_key
 # Contract IDs will be written to frontend/.env automatically
 ```
 
-### 4. Fund your account
+### 4. Fund your account (XLM for fees)
 
-Use the Stellar testnet faucet:
+Your wallet needs XLM to pay transaction fees. On testnet use Friendbot:
 
 ```bash
 curl "https://friendbot.stellar.org?addr=YOUR_PUBLIC_KEY"
 ```
 
-Or use the **Token Faucet** built into the app UI.
+On mainnet, fund your wallet with XLM from any exchange.
+
+### 4b. Get SAVE tokens
+
+Use the **Token Faucet** built into the app UI — click **"Get 1000 SAVE Tokens"** before making your first deposit.
 
 ### 5. Run the frontend
 
