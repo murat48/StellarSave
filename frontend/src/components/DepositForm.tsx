@@ -204,6 +204,10 @@ export default function DepositForm({ onDeposited, activeSavings }: DepositFormP
         </div>
       ) : (
       <div className="bg-slate-800 rounded-2xl p-5 space-y-4">
+        <div className="bg-indigo-900/40 border border-indigo-500/30 rounded-xl p-3 text-xs text-indigo-300">
+          <span className="font-semibold">⚠️ SAVE token gerekli:</span> Deposit yapabilmek için önce aşağıdaki <span className="font-semibold">Token Faucet</span> bölümünden SAVE token alman gerekiyor.
+        </div>
+
         <div>
           <label className="block text-sm text-slate-400 mb-1">Amount (SAVE)</label>
           <input

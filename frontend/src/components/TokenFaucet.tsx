@@ -105,7 +105,11 @@ export default function TokenFaucet() {
 
   return (
     <section>
-      <h2 className="text-xl font-bold text-white mb-4">Test Faucet</h2>
+      <h2 className="text-xl font-bold text-white mb-2">SAVE Token Faucet</h2>
+      <p className="text-sm text-slate-400 mb-4">
+        Deposit yapabilmek için önce buradan <span className="text-indigo-400 font-semibold">1000 SAVE</span> token al.
+        Her cüzdan adresi için sınırsız kez kullanılabilir.
+      </p>
       <div className="bg-slate-800 rounded-2xl p-5 space-y-4">
         <div className="text-center">
           <div className="text-xs text-slate-400 mb-1">Your SAVE Balance</div>
@@ -119,7 +123,7 @@ export default function TokenFaucet() {
           disabled={loading || !isConnected}
           className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-sm transition-colors"
         >
-          {loading ? "Claiming..." : "Get Test SAVE Tokens"}
+          {loading ? "Claiming..." : "Get 1000 SAVE Tokens"}
         </button>
 
         {status && <p className="text-sm text-slate-300 text-center">{status}</p>}
