@@ -1,9 +1,9 @@
 import { useCallback } from "react";
-import { rpc, TransactionBuilder, Networks, BASE_FEE, xdr, scValToNative } from "@stellar/stellar-sdk";
+import { rpc, TransactionBuilder, BASE_FEE, xdr, scValToNative } from "@stellar/stellar-sdk";
 import { useWallet } from "../contexts/WalletContext";
+import { NETWORK_PASSPHRASE } from "../config";
 
 const RPC_URL = import.meta.env.VITE_RPC_URL as string;
-const NETWORK_PASSPHRASE = Networks.TESTNET;
 
 const server = new rpc.Server(RPC_URL, { allowHttp: false });
 

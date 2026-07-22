@@ -2,10 +2,11 @@ import React, { createContext, useCallback, useContext, useState } from "react";
 import { StellarWalletsKit, Networks } from "@creit.tech/stellar-wallets-kit";
 import { defaultModules } from "@creit.tech/stellar-wallets-kit/modules/utils";
 import { FREIGHTER_ID } from "@creit.tech/stellar-wallets-kit/modules/freighter";
+import { IS_MAINNET } from "../config";
 
 // Initialize once — all methods are static in the new API
 StellarWalletsKit.init({
-  network: Networks.TESTNET,
+  network: IS_MAINNET ? Networks.PUBLIC : Networks.TESTNET,
   selectedWalletId: FREIGHTER_ID,
   modules: defaultModules(),
 });
@@ -37,7 +38,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const signTransaction = useCallback(async (xdr: string): Promise<string> => {
     const { signedTxXdr } = await StellarWalletsKit.signTransaction(xdr, {
-      networkPassphrase: Networks.TESTNET,
+      networkPassphrase: IS_MAINNET ? Networks.PUBLIC : Networks.TESTNET,
     });
     return signedTxXdr;
   }, []);

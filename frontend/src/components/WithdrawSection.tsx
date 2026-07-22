@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import {
   rpc,
   TransactionBuilder,
-  Networks,
   BASE_FEE,
   Contract,
   Address,
   scValToNative,
 } from "@stellar/stellar-sdk";
 import { useWallet } from "../contexts/WalletContext";
+import { NETWORK_PASSPHRASE } from "../config";
 
 const SAVINGS_CONTRACT_ID = import.meta.env.VITE_SAVINGS_CONTRACT_ID as string;
 
@@ -64,7 +64,7 @@ export default function WithdrawSection({ onWithdrew }: WithdrawSectionProps) {
         const faketAccount = await server.getAccount(address);
         const getTx = new TransactionBuilder(faketAccount, {
           fee: BASE_FEE,
-          networkPassphrase: Networks.TESTNET,
+          networkPassphrase: NETWORK_PASSPHRASE,
         })
           .addOperation(contract.call("get_savings", new Address(address).toScVal()))
           .setTimeout(30)
@@ -81,7 +81,7 @@ export default function WithdrawSection({ onWithdrew }: WithdrawSectionProps) {
           // get time remaining
           const remTx = new TransactionBuilder(faketAccount, {
             fee: BASE_FEE,
-            networkPassphrase: Networks.TESTNET,
+            networkPassphrase: NETWORK_PASSPHRASE,
           })
             .addOperation(contract.call("get_time_remaining", new Address(address).toScVal()))
             .setTimeout(30)
@@ -112,7 +112,7 @@ export default function WithdrawSection({ onWithdrew }: WithdrawSectionProps) {
 
       const tx = new TransactionBuilder(account, {
         fee: BASE_FEE,
-        networkPassphrase: Networks.TESTNET,
+        networkPassphrase: NETWORK_PASSPHRASE,
       })
         .addOperation(contract.call("withdraw", new Address(address).toScVal()))
         .setTimeout(30)
@@ -120,7 +120,7 @@ export default function WithdrawSection({ onWithdrew }: WithdrawSectionProps) {
 
       const prepared = await server.prepareTransaction(tx);
       const signed = await signTransaction(prepared.toXDR());
-      const submitted = await server.sendTransaction(TransactionBuilder.fromXDR(signed, Networks.TESTNET));
+      const submitted = await server.sendTransaction(TransactionBuilder.fromXDR(signed, NETWORK_PASSPHRASE));
       if (submitted.status === "ERROR") throw new Error("Withdraw transaction rejected");
 
       for (let i = 0; i < 30; i++) {

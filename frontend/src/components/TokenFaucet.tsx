@@ -2,13 +2,13 @@ import { useEffect, useState, useCallback } from "react";
 import {
   rpc,
   TransactionBuilder,
-  Networks,
   BASE_FEE,
   Contract,
   Address,
   scValToNative,
 } from "@stellar/stellar-sdk";
 import { useWallet } from "../contexts/WalletContext";
+import { NETWORK_PASSPHRASE, IS_MAINNET } from "../config";
 
 const TOKEN_CONTRACT_ID = import.meta.env.VITE_TOKEN_CONTRACT_ID as string;
 
@@ -30,7 +30,7 @@ export default function TokenFaucet() {
 
       const tx = new TransactionBuilder(account, {
         fee: BASE_FEE,
-        networkPassphrase: Networks.TESTNET,
+        networkPassphrase: NETWORK_PASSPHRASE,
       })
         .addOperation(contract.call("balance", new Address(address).toScVal()))
         .setTimeout(30)
@@ -68,7 +68,7 @@ export default function TokenFaucet() {
 
       const tx = new TransactionBuilder(account, {
         fee: BASE_FEE,
-        networkPassphrase: Networks.TESTNET,
+        networkPassphrase: NETWORK_PASSPHRASE,
       })
         .addOperation(
           contract.call(
@@ -82,7 +82,7 @@ export default function TokenFaucet() {
       const prepared = await server.prepareTransaction(tx);
       const signed = await signTransaction(prepared.toXDR());
       const response = await server.sendTransaction(
-        TransactionBuilder.fromXDR(signed, Networks.TESTNET)
+        TransactionBuilder.fromXDR(signed, NETWORK_PASSPHRASE)
       );
 
       if (response.status === "ERROR") throw new Error("Faucet transaction failed");
@@ -124,9 +124,11 @@ export default function TokenFaucet() {
 
         {status && <p className="text-sm text-slate-300 text-center">{status}</p>}
 
-        <p className="text-xs text-slate-500 text-center">
-          Testnet only — tokens have no real value
-        </p>
+        {!IS_MAINNET && (
+          <p className="text-xs text-slate-500 text-center">
+            Testnet only — tokens have no real value
+          </p>
+        )}
       </div>
     </section>
   );

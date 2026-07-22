@@ -9,13 +9,13 @@ import TokenFaucet from "./components/TokenFaucet";
 import {
   rpc,
   TransactionBuilder,
-  Networks,
   BASE_FEE,
   Contract,
   Address,
   scValToNative,
   xdr,
 } from "@stellar/stellar-sdk";
+import { NETWORK_PASSPHRASE, NETWORK_LABEL, IS_MAINNET } from "./config";
 import "./index.css";
 
 const TOKEN_CONTRACT_ID = import.meta.env.VITE_TOKEN_CONTRACT_ID ?? "Not deployed";
@@ -43,7 +43,7 @@ async function simulateRead(
     const account = await server.getAccount(sourceAddress);
     const tx = new TransactionBuilder(account, {
       fee: BASE_FEE,
-      networkPassphrase: Networks.TESTNET,
+      networkPassphrase: NETWORK_PASSPHRASE,
     })
       .addOperation(contract.call(method, ...args))
       .setTimeout(30)
@@ -104,8 +104,12 @@ function AppInner() {
           <div className="flex items-center gap-2">
             <span className="text-2xl">⭐</span>
             <span className="text-lg font-bold text-white">StellarSave</span>
-            <span className="hidden sm:inline-block text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-medium border border-amber-500/30">
-              TESTNET
+            <span className={`hidden sm:inline-block text-xs px-2 py-0.5 rounded-full font-medium border ${
+              IS_MAINNET
+                ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                : 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+            }`}>
+              {NETWORK_LABEL.toUpperCase()}
             </span>
           </div>
 
@@ -177,8 +181,12 @@ function AppInner() {
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
             <span className="text-sm font-semibold text-slate-400">Contract Addresses</span>
-            <span className="text-xs px-2 py-1 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 w-fit">
-              Stellar Testnet
+            <span className={`text-xs px-2 py-1 rounded-full border w-fit ${
+              IS_MAINNET
+                ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                : 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+            }`}>
+              Stellar {NETWORK_LABEL}
             </span>
           </div>
           <div className="space-y-2 text-xs font-mono text-slate-500 break-all">

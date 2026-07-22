@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useWallet } from "../contexts/WalletContext";
+import { NETWORK_PASSPHRASE } from "../config";
 
 const LOCK_PERIODS: { label: string; ledgers: number }[] = [
   { label: "1 Week", ledgers: 50400 },
@@ -38,7 +39,7 @@ export default function DepositForm({ onDeposited, activeSavings }: DepositFormP
     setStatus(null);
 
     try {
-      const { rpc, TransactionBuilder, Networks, BASE_FEE, Contract, nativeToScVal, Address } =
+      const { rpc, TransactionBuilder, BASE_FEE, Contract, nativeToScVal, Address } =
         await import("@stellar/stellar-sdk");
 
       const server = new rpc.Server(import.meta.env.VITE_RPC_URL, { allowHttp: false });
@@ -63,7 +64,7 @@ export default function DepositForm({ onDeposited, activeSavings }: DepositFormP
       const tokenContract = new Contract(TOKEN_CONTRACT_ID);
       const approveTx = new TransactionBuilder(account, {
         fee: BASE_FEE,
-        networkPassphrase: Networks.TESTNET,
+        networkPassphrase: NETWORK_PASSPHRASE,
       })
         .addOperation(
           tokenContract.call(
@@ -80,7 +81,7 @@ export default function DepositForm({ onDeposited, activeSavings }: DepositFormP
       const preparedApprove = await server.prepareTransaction(approveTx);
       const signedApprove = await signTransaction(preparedApprove.toXDR());
       const approveSubmit = await server.sendTransaction(
-        TransactionBuilder.fromXDR(signedApprove, Networks.TESTNET)
+        TransactionBuilder.fromXDR(signedApprove, NETWORK_PASSPHRASE)
       );
       if (approveSubmit.status === "ERROR") throw new Error("Approve transaction rejected");
       await waitForTx(approveSubmit.hash);
@@ -91,7 +92,7 @@ export default function DepositForm({ onDeposited, activeSavings }: DepositFormP
       const savingsContract = new Contract(SAVINGS_CONTRACT_ID);
       const depositTx = new TransactionBuilder(account2, {
         fee: BASE_FEE,
-        networkPassphrase: Networks.TESTNET,
+        networkPassphrase: NETWORK_PASSPHRASE,
       })
         .addOperation(
           savingsContract.call(
@@ -107,7 +108,7 @@ export default function DepositForm({ onDeposited, activeSavings }: DepositFormP
       const preparedDeposit = await server.prepareTransaction(depositTx);
       const signedDeposit = await signTransaction(preparedDeposit.toXDR());
       const depositSubmit = await server.sendTransaction(
-        TransactionBuilder.fromXDR(signedDeposit, Networks.TESTNET)
+        TransactionBuilder.fromXDR(signedDeposit, NETWORK_PASSPHRASE)
       );
       if (depositSubmit.status === "ERROR") throw new Error("Deposit transaction rejected");
       await waitForTx(depositSubmit.hash);
