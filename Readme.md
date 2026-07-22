@@ -207,11 +207,11 @@ StellarSave/
 
 ## Lock Periods
 
-| Period   | Ledgers | Approx. Time |
-| -------- | ------- | ------------ |
-| 1 Week   | 50,400  | ~7 days      |
-| 1 Month  | 201,600 | ~28 days     |
-| 3 Months | 604,800 | ~84 days     |
+| Period   | Ledgers   | Approx. Time |
+| -------- | --------- | ------------ |
+| 1 Week   | 120,960   | ~7 days      |
+| 1 Month  | 483,840   | ~28 days     |
+| 3 Months | 1,451,520 | ~84 days     |
 
 > 1 Stellar ledger ≈ 5 seconds
 

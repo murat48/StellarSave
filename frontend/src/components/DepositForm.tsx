@@ -4,9 +4,9 @@ import { NETWORK_PASSPHRASE } from "../config";
 import { rpc as rpcSdk } from "@stellar/stellar-sdk";
 
 const LOCK_PERIODS: { label: string; ledgers: number }[] = [
-  { label: "1 Week", ledgers: 50400 },
-  { label: "1 Month", ledgers: 201600 },
-  { label: "3 Months", ledgers: 604800 },
+  { label: "1 Week",   ledgers: 120960  },  // 7 days  × 86400s / 5s per ledger
+  { label: "1 Month",  ledgers: 483840  },  // 28 days × 86400s / 5s per ledger
+  { label: "3 Months", ledgers: 1451520 },  // 84 days × 86400s / 5s per ledger
 ];
 
 const SAVINGS_CONTRACT_ID = import.meta.env.VITE_SAVINGS_CONTRACT_ID as string;
