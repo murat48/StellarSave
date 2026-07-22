@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   rpc,
   TransactionBuilder,
@@ -24,16 +24,34 @@ function formatSave(amount: bigint): string {
 }
 
 function Countdown({ remainingLedgers }: { remainingLedgers: number }) {
-  const totalSeconds = remainingLedgers * 5;
-  const days = Math.floor(totalSeconds / 86400);
-  const hours = Math.floor((totalSeconds % 86400) / 3600);
-  const mins = Math.floor((totalSeconds % 3600) / 60);
+  const initialSeconds = remainingLedgers * 5;
+  const [secondsLeft, setSecondsLeft] = useState(initialSeconds);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    setSecondsLeft(remainingLedgers * 5);
+  }, [remainingLedgers]);
+
+  useEffect(() => {
+    if (secondsLeft <= 0) return;
+    intervalRef.current = setInterval(() => {
+      setSecondsLeft((s) => Math.max(0, s - 1));
+    }, 1000);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [secondsLeft <= 0]);
+
+  const days = Math.floor(secondsLeft / 86400);
+  const hours = Math.floor((secondsLeft % 86400) / 3600);
+  const mins = Math.floor((secondsLeft % 3600) / 60);
+  const secs = secondsLeft % 60;
 
   return (
-    <div className="flex gap-4 justify-center">
-      {[["Days", days], ["Hours", hours], ["Mins", mins]].map(([label, val]) => (
-        <div key={label as string} className="text-center">
-          <div className="text-3xl font-bold text-white">{String(val).padStart(2, "0")}</div>
+    <div className="flex gap-3 justify-center">
+      {([["Days", days], ["Hours", hours], ["Mins", mins], ["Secs", secs]] as [string, number][]).map(([label, val]) => (
+        <div key={label} className="text-center">
+          <div className="text-3xl font-bold text-white tabular-nums">{String(val).padStart(2, "0")}</div>
           <div className="text-xs text-slate-400">{label}</div>
         </div>
       ))}
