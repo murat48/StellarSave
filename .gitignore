@@ -6,7 +6,6 @@ frontend/*.local
 
 # Rust / Soroban build artifacts
 contracts/target/
-*.wasm
 
 # Environment files
 frontend/.env

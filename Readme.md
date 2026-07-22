@@ -1,7 +1,8 @@
-# StellarSave — Decentralized Savings dApp on Stellar Testnet
+# StellarSave — Decentralized Savings dApp on Stellar
 
 [![CI](https://github.com/murat48/StellarSave/actions/workflows/ci.yml/badge.svg)](https://github.com/murat48/StellarSave/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Stellar Mainnet](https://img.shields.io/badge/Network-Stellar%20Mainnet-brightgreen)](https://stellar.expert/explorer/public)
 [![Stellar Testnet](https://img.shields.io/badge/Network-Stellar%20Testnet-blue)](https://testnet.steexp.com)
 
 > **Live Demo:**
@@ -25,15 +26,27 @@ StellarSave is a fully on-chain DeFi savings application built on the **Stellar 
 
 ---
 
-## Contract Addresses (Stellar Testnet)
+## Contract Addresses
 
-| Contract   | Address                 | Network         |
-| ---------- | ----------------------- | --------------- |
-| SAVE Token | `CDODH5V5GCVH6GRML3DFHACN47TZMTG45LZDI73L3N2HAY5ABG6ESNIC` | Stellar Testnet |
-| Savings    | `CACWUHVHACFIZGILVZAQP6T5YJZCLZUU7S4BHXCTX65K4JE6EWFCB6JT` | Stellar Testnet |
-| Rewards    | `CBOWZ2CGD6PAIDHOY3GLVUYHV4VRGIX5SCDMDNQXQWIUA63FDPSU524N` | Stellar Testnet |
+### Stellar Mainnet (Production)
 
-> Run `./scripts/deploy.sh` to deploy and auto-populate `frontend/.env`.
+| Contract   | Address | Explorer |
+| ---------- | ------- | -------- |
+| SAVE Token | `CA7YIXT3JPVX4CRVKGHIMUC5QLVZFNUMQHLLE3Y7LYGAKJTDBHVTXCXI` | [View](https://stellar.expert/explorer/public/contract/CA7YIXT3JPVX4CRVKGHIMUC5QLVZFNUMQHLLE3Y7LYGAKJTDBHVTXCXI) |
+| Savings    | `CCQANGP6ZJ2AK6BFURFYVSKQEXARE3MWVUCGSCQAVCMKMAB7G4S7A4QM` | [View](https://stellar.expert/explorer/public/contract/CCQANGP6ZJ2AK6BFURFYVSKQEXARE3MWVUCGSCQAVCMKMAB7G4S7A4QM) |
+| Rewards    | `CBNH3KGDVAOE4THEDAN3HKDHM2Z3QACNQX7G54MMZM5PAJQUMWOFG7FV` | [View](https://stellar.expert/explorer/public/contract/CBNH3KGDVAOE4THEDAN3HKDHM2Z3QACNQX7G54MMZM5PAJQUMWOFG7FV) |
+
+> Run `./scripts/deploy-mainnet.sh` to deploy to mainnet and auto-populate `frontend/.env`.
+
+### Stellar Testnet
+
+| Contract   | Address |
+| ---------- | ------- |
+| SAVE Token | `CDODH5V5GCVH6GRML3DFHACN47TZMTG45LZDI73L3N2HAY5ABG6ESNIC` |
+| Savings    | `CACWUHVHACFIZGILVZAQP6T5YJZCLZUU7S4BHXCTX65K4JE6EWFCB6JT` |
+| Rewards    | `CBOWZ2CGD6PAIDHOY3GLVUYHV4VRGIX5SCDMDNQXQWIUA63FDPSU524N` |
+
+> Run `./scripts/deploy.sh` to deploy to testnet and auto-populate `frontend/.env`.
 
 ---
 ##  CI/CD pipeline running
@@ -94,7 +107,7 @@ $$\text{reward} = \text{principal} \times 0.05 \times \frac{\text{duration\_ledg
 
 | Layer      | Technology                      |
 | ---------- | ------------------------------- |
-| Blockchain | Stellar Testnet (Soroban)       |
+| Blockchain | Stellar Mainnet + Testnet (Soroban) |
 | Contracts  | Rust + Soroban SDK              |
 | Frontend   | React 18 + Vite + TypeScript    |
 | Styling    | Tailwind CSS v4                 |
@@ -128,11 +141,19 @@ cp frontend/.env.example frontend/.env
 # Edit .env with your deployed contract IDs
 ```
 
-### 3. Deploy contracts (testnet)
+### 3. Deploy contracts
 
+**Testnet:**
 ```bash
 export STELLAR_SECRET=your_testnet_secret_key
 ./scripts/deploy.sh
+# Contract IDs will be written to frontend/.env automatically
+```
+
+**Mainnet:**
+```bash
+export STELLAR_SECRET=your_mainnet_secret_key
+./scripts/deploy-mainnet.sh
 # Contract IDs will be written to frontend/.env automatically
 ```
 
@@ -203,7 +224,7 @@ StellarSave/
 | Name     | SaveToken |
 | Symbol   | SAVE      |
 | Decimals | 7         |
-| Network  | Testnet   |
+| Network  | Mainnet + Testnet |
 
 > 1 SAVE = 10,000,000 stroops (7 decimal places)
 
@@ -242,22 +263,7 @@ Required GitHub Secrets:
 
 MIT © 2026 murat48
 
-## PROJECT OVERVIEW
 
-A decentralized savings app where users:
-
-1. Connect their Stellar wallet using @creit-tech/stellar-wallets-kit
-2. Create a custom "SAVE" token (Soroban)
-3. Lock funds for a set period
-4. Earn rewards when the period ends
-
-## TECH STACK
-
-- Blockchain: Stellar testnet (Soroban smart contracts)
-- Language: Rust (Soroban SDK)
-- Frontend: React + Vite + TypeScript
-- Styling: Tailwind CSS (mobile responsive)
-- Wallet: @creit-tech/stellar-wallets-kit (supports Freighter, xBull, Albedo, Lobstr, WalletConnect)
 - CI/CD: GitHub Actions
 
 ---
